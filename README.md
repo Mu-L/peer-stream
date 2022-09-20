@@ -71,7 +71,7 @@ HTML:
 
 ```html
 <script src="peer-stream.js"></script>
-<video is="peer-stream" signal="ws://127.0.0.1:88/hello"></video>
+<video is="peer-stream" id="ws://127.0.0.1:88/hello"></video>
 ```
 
 or JavaScript:
@@ -80,7 +80,7 @@ or JavaScript:
 <script type="module">
 import "peer-stream.js";
 const ps = document.createElement("video", { is: "peer-stream" });
-ps.setAttribute("signal", "ws://127.0.0.1:88/hello");
+ps.id = "ws://127.0.0.1:88/hello";
 document.body.append(ps);
 </script>
 ```
