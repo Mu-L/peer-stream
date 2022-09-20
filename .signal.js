@@ -17,7 +17,7 @@ process.env.UE5_GPU_0 = "start C:/Users/admin/Desktop/Windows/demo.exe -Unattend
 process.env.UE5_GPU_1 = "start C:/Users/admin/Desktop/Windows/demo.exe -Unattended -RenderOffScreen -PixelStreamingURL=ws://127.0.0.1:8888/ -GraphicsAdapter=0 -ProjectID=GPU_1";
 process.env.UE5_GPU_2 = "start C:/Users/admin/Desktop/Windows/demo.exe -Unattended -RenderOffScreen -PixelStreamingURL=ws://127.0.0.1:8888/ -GraphicsAdapter=0 -ProjectID=GPU_2";
 
-// process.env.UE5_GZA = 'curl http://v4.gza.com/run_UE5'
+// process.env.UE5_10_0_42_16 = 'curl http://10.0.42.16/RUN-UE5'
 
 require("./signal.js");
 

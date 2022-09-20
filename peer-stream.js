@@ -125,12 +125,9 @@ class PeerStream extends HTMLVideoElement {
       return;
     }
 
-
-    let signal = this.getAttribute("signal") || location.href.replace(/^http/, "ws");
-
     // await new Promise((res) => setTimeout(res, 1000));
     this.ws.close(1000);
-    this.ws = new WebSocket(signal);
+    this.ws = new WebSocket(this.id || location.href.replace(/^http/, "ws"));
 
     this.ws.onerror = (e) => {
       console.log(e);
@@ -147,7 +144,7 @@ class PeerStream extends HTMLVideoElement {
     this.ws.onclose = (e) => {
       let timeout = 3000;
       if (e.code === 3333) {
-        this.setAttribute("signal", e.reason);
+        this.id = e.reason;
         console.log("redirect =>", e.reason);
         timeout = 500;
       } else {
@@ -171,7 +168,7 @@ class PeerStream extends HTMLVideoElement {
 
   adoptedCallback() { }
 
-  static observedAttributes = ["signal"];
+  static observedAttributes = ["id"];
   attributeChangedCallback(name, oldValue, newValue) {
     if (!this.isConnected) return;
     // fired before connectedCallback when startup
