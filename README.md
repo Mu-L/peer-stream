@@ -29,14 +29,13 @@ start http://localhost:88/test.html
 | -------- | --------- | --------- | --------------------------------------------------------- |
 | player   | number    | 88        | WS port number for player                                 |
 | engine   | number    | 8888      | WS port number for UE5                                    |
-| http     | bool      | false     | serve http static files (same port with player)           |
 | UE5_*    | string[ ] |           | run command when player connected (e.g. starting UE5.exe) |
 | one2one  | bool      | false     | one-to-one mapping for player & UE5                       |
 | token    | string    |           | authenticate the player                                   |
 | limit    | number    | +Infinity | limit max number of players connected                     |
 | throttle | bool      | false     | WebSocket throttle, prevent frequent reconnection         |
 
-### Load Balance in signal.js
+### Load Balance
 
 signal.js accept multi UE5 & player connections, where each UE5 maps to multi-players with load-balancing. Turn `one2one` on to keep one-to-one mapping. Provide `UE5_*` to start UE5 automatically. More detailed example in `.signal.js`.
 

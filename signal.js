@@ -1,4 +1,4 @@
-"5.0.3";
+"5.0.4";
 
 const { Server } = require("ws");
 
@@ -88,23 +88,6 @@ ENGINE.on("connection", (ue, req) => {
 
 });
 
-function onRequest(req, res) {
-	// websocket请求时不触发
-	// serve HTTP static files
-
-	const read = require("fs").createReadStream(
-		require("path").join(__dirname, req.url)
-	);
-
-	read.on("error", (err) => {
-		res.end(err.message);
-	}).on("ready", () => {
-		read.pipe(res);
-	});
-}
-
-
-
 const UE5_pool = Object.entries(process.env)
 	.filter(([key]) => key.startsWith('UE5_'))
 	.map(([, value]) => value)
@@ -112,8 +95,20 @@ const UE5_pool = Object.entries(process.env)
 // front end
 global.PLAYER = new Server({
 	server: require("http")
-		.createServer(process.env.http ? onRequest : undefined)
-		.listen(+process.env.player || 88, () => { }),
+		.createServer((req, res) => {
+			// websocket请求时不触发
+			// serve HTTP static files
+
+			const read = require("fs").createReadStream(
+				require("path").join(__dirname, req.url)
+			);
+
+			read.on("error", (err) => {
+				res.end(err.message);
+			}).on("ready", () => {
+				read.pipe(res);
+			});
+		}).listen(+process.env.player || 88, () => { }),
 	clientTracking: true,
 });
 // every player
