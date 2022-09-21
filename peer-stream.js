@@ -127,7 +127,7 @@ class PeerStream extends HTMLVideoElement {
 
 		// await new Promise((res) => setTimeout(res, 1000));
 		this.ws.close(1000);
-		this.ws = new WebSocket(this.id || location.href.replace(/^http/, "ws"));
+		this.ws = new WebSocket(this.id || location.href.replace(/^http/, "ws"), 'peer-stream');
 
 		this.ws.onerror = (e) => {
 			console.log(e);
@@ -296,7 +296,7 @@ class PeerStream extends HTMLVideoElement {
 		this.dc.binaryType = "arraybuffer";
 
 		this.dc.onopen = (e) => {
-			console.log("✅ data channel connected");
+			console.log("✅ data channel open");
 			this.style.pointerEvents = "auto";
 
 			setTimeout(() => {

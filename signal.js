@@ -3,7 +3,7 @@
 const { Server } = require("ws");
 
 global.ENGINE = new Server(
-	{ port: +process.env.engine || 8888, clientTracking: true },
+	{ noServer: true, clientTracking: true },
 	() => { }
 );
 const iceServers = [{
@@ -38,8 +38,8 @@ ENGINE.on("connection", (ue, req) => {
 	}
 	print();
 
-	ue.on("message", (msg) => {
-		msg = JSON.parse(msg);
+	ue.onmessage = (msg) => {
+		msg = JSON.parse(msg.data);
 
 
 		// Convert incoming playerId to a string if it is an integer, if needed. (We support receiving it as an int or string).
@@ -62,21 +62,16 @@ ENGINE.on("connection", (ue, req) => {
 		} else if (msg.type === "disconnectPlayer") {
 			fe.close(1011, msg.reason);
 		} else { }
-	});
-
-	ue.onclose = async (e) => {
-		print();
-		await new Promise(r => setTimeout(r, 1000))
-		ue.fe.forEach(fe => {
-			// ue断掉后，让玩家们去寻找下家
-			PLAYER.emit('connection', fe, fe.req)
-		})
 	};
 
-	ue.on("error", (error) => {
-		// A control frame must have a payload length of 125 bytes or less
-	});
+	ue.onclose = (e) => {
+		ue.fe.forEach(fe => {
+			fe.ue = null
+		})
+		print();
+	};
 
+	ue.onerror;
 
 });
 
@@ -85,24 +80,76 @@ const UE5_pool = Object.entries(process.env)
 	.filter(([key]) => key.startsWith('UE5_'))
 	.map(([, value]) => value)
 
+
+const HTTP =
+	require("http").createServer().listen(+process.env.PORT || 88)
+
+HTTP.on('request', (req, res) => {
+	// websocket请求时不触发
+	// serve HTTP static files
+
+	const read = require("fs").createReadStream(
+		require("path").join(__dirname, req.url)
+	);
+
+	read.on("error", (err) => {
+		res.end(err.message);
+	}).on("ready", () => {
+		read.pipe(res);
+	});
+})
+
+HTTP.on('upgrade', (req, socket, head) => {
+
+	// password
+	if (process.env.token) {
+		if (req.url !== process.env.token) {
+			socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+			socket.destroy();
+			return;
+		}
+	}
+
+
+	// players max count
+	if (process.env.limit) {
+		if (PLAYER.clients.size > +process.env.limit) {
+			socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+			socket.destroy();
+			return;
+		}
+	}
+
+	// throttle
+	if (process.env.throttle) {
+		if (global.throttle) {
+			socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+			socket.destroy();
+			return;
+		} else {
+			global.throttle = true;
+			setTimeout(() => {
+				global.throttle = false;
+			}, 500);
+		}
+	}
+
+	if (req.headers['sec-websocket-protocol'] === 'peer-stream') {
+		PLAYER.handleUpgrade(req, socket, head, fe => {
+			PLAYER.emit('connection', fe, req,)
+		})
+	} else {
+		ENGINE.handleUpgrade(req, socket, head, fe => {
+			ENGINE.emit('connection', fe, req,)
+		})
+	}
+})
+
+
 // front end
 global.PLAYER = new Server({
-	server: require("http")
-		.createServer((req, res) => {
-			// websocket请求时不触发
-			// serve HTTP static files
-
-			const read = require("fs").createReadStream(
-				require("path").join(__dirname, req.url)
-			);
-
-			read.on("error", (err) => {
-				res.end(err.message);
-			}).on("ready", () => {
-				read.pipe(res);
-			});
-		}).listen(+process.env.player || 88, () => { }),
 	clientTracking: true,
+	noServer: true
 });
 // every player
 PLAYER.on("connection", (fe, req) => {
@@ -114,36 +161,6 @@ PLAYER.on("connection", (fe, req) => {
 	} else {
 		// 选择人最少的ue
 		fe.ue = [...ENGINE.clients].sort((a, b) => a.fe.size - b.fe.size)[0]
-	}
-
-
-	// password
-	if (process.env.token) {
-		if (req.url !== process.env.token) {
-			fe.close();
-			return;
-		}
-	}
-
-	// players max count
-	if (process.env.limit) {
-		if (PLAYER.clients.size > +process.env.limit) {
-			fe.close();
-			return;
-		}
-	}
-
-	// throttle
-	if (process.env.throttle) {
-		if (global.throttle) {
-			fe.close();
-			return;
-		} else {
-			global.throttle = true;
-			setTimeout(() => {
-				global.throttle = false;
-			}, 500);
-		}
 	}
 
 	if (fe.ue) {
