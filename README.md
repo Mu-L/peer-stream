@@ -14,10 +14,10 @@ Compared to EpicGame's heavily-designed SDK for Pixel Streaming, peer-stream.js 
 npm install ws@8.5.0
 
 # start Signaling Server
-player=88 engine=8888 node signal.js
+PORT=88 node signal.js
 
 # start packaged UE5
-start path/to/UE5.exe -PixelStreamingURL="ws://localhost:8888"
+start path/to/UE5.exe -PixelStreamingURL="ws://localhost:88"
 
 # visit webpage
 start http://localhost:88/test.html
@@ -25,19 +25,18 @@ start http://localhost:88/test.html
 
 ## Env Variables for signal.js
 
-| env      | type     | default   | usage                                                     |
-| -------- | -------- | --------- | --------------------------------------------------------- |
-| player   | number   | 88        | WebSocket port for player                                 |
-| engine   | number   | 8888      | WebSocket port for UE5                                    |
-| UE5_*    | string[] |           | run command when player connected (e.g. starting UE5.exe) |
-| one2one  | bool     | false     | one-to-one mapping for player & UE5                       |
-| token    | string   |           | WebSocket password                                        |
-| limit    | number   | +Infinity | limit max number of players connected                     |
-| throttle | bool     | false     | WebSocket throttle, prevent frequent reconnection         |
+| env      | type     | default   | usage                                              |
+| -------- | -------- | --------- | -------------------------------------------------- |
+| PORT     | number   | 88        | WebSocket port for player & UE5                    |
+| UE5_*    | string[] |           | run command when player connected (UE5 auto start) |
+| one2one  | bool     | false     | one-to-one mapping for player & UE5                |
+| token    | string   |           | WebSocket password                                 |
+| limit    | number   | +Infinity | limit max number of players connected              |
+| throttle | bool     | false     | WebSocket throttle, prevent frequent reconnection  |
 
 ### Load Balance
 
-signal.js accept multi UE5 & player connections, where each UE5 maps to multi-players with load-balancing. Turn `one2one` on to keep one-to-one mapping. Provide `UE5_*` to start UE5 automatically. More detailed example in `.signal.js`.
+`signal.js` accept multi UE5 & player connections, where each UE5 maps to multi-players with load-balancing. Turn `one2one` on to keep one-to-one mapping. Provide `UE5_*` to start UE5 automatically. More detailed example in `.signal.js`.
 
 ## Unreal Engine
 
@@ -52,7 +51,7 @@ start myPackagedGame.exe -{key}={value}
 common startup options:
 
 ```s
- -PixelStreamingURL="ws://localhost:8888"
+ -PixelStreamingURL="ws://localhost:88"
  -RenderOffScreen
  -Unattended
  -GraphicsAdapter=0
@@ -71,7 +70,7 @@ HTML:
 
 ```html
 <script src="peer-stream.js"></script>
-<video is="peer-stream" id="ws://127.0.0.1:88/hello"></video>
+<video is="peer-stream" id="ws://127.0.0.1:88/"></video>
 ```
 
 or JavaScript:
@@ -80,7 +79,7 @@ or JavaScript:
 <script type="module">
 import "peer-stream.js";
 const ps = document.createElement("video", { is: "peer-stream" });
-ps.id = "ws://127.0.0.1:88/hello";
+ps.id = "ws://127.0.0.1:88/";
 document.body.append(ps);
 </script>
 ```
