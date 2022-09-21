@@ -64,13 +64,14 @@ ENGINE.on("connection", (ue, req) => {
 		} else { }
 	});
 
-	ue.on("close", (code, reason) => {
+	ue.onclose = async (e) => {
+		print();
+		await new Promise(r => setTimeout(r, 1000))
 		ue.fe.forEach(fe => {
 			// ue断掉后，让玩家们去寻找下家
 			PLAYER.emit('connection', fe, fe.req)
 		})
-		print();
-	});
+	};
 
 	ue.on("error", (error) => {
 		// A control frame must have a payload length of 125 bytes or less
@@ -194,9 +195,7 @@ PLAYER.on("connection", (fe, req) => {
 		print();
 	};
 
-	fe.onerror = (error) => { };
-
-
+	fe.onerror;
 
 });
 

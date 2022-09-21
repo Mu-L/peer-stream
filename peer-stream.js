@@ -310,6 +310,7 @@ class PeerStream extends HTMLVideoElement {
 		this.dc.onclose = (e) => {
 			console.info("❌ data channel closed");
 			this.style.pointerEvents = "none";
+			this.blur();
 		};
 
 		this.dc.onerror;
