@@ -75,9 +75,10 @@ ENGINE.on("connection", (ue, req) => {
 	});
 
 	ue.on("close", (code, reason) => {
-
-		ue.fe.forEach(fe => fe.ue = null)
-		print();
+		ue.fe.forEach(fe => {
+			PLAYER.emit('connection', fe, fe.req)
+		})
+		// print();
 	});
 
 	ue.on("error", (error) => {
