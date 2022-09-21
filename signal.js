@@ -6,6 +6,15 @@ global.ENGINE = new Server(
 	{ port: +process.env.engine || 8888, clientTracking: true },
 	() => { }
 );
+const iceServers = [{
+	urls: [
+		"stun:stun.l.google.com:19302",
+		"stun:stun1.l.google.com:19302",
+		"stun:stun2.l.google.com:19302",
+		"stun:stun3.l.google.com:19302",
+		"stun:stun4.l.google.com:19302",
+	],
+},]
 
 ENGINE.on("connection", (ue, req) => {
 	ue.req = req;
@@ -16,14 +25,7 @@ ENGINE.on("connection", (ue, req) => {
 		JSON.stringify({
 			type: "config",
 			peerConnectionOptions: {
-				// iceServers: [{
-				//     urls: [
-				//       "stun:stun.l.google.com:19302",
-				//       "stun:stun1.l.google.com:19302",
-				//       "stun:stun2.l.google.com:19302",
-				//       "stun:stun3.l.google.com:19302",
-				//       "stun:stun4.l.google.com:19302",
-				// ],},],
+				// iceServers
 			},
 		})
 	);
@@ -83,7 +85,6 @@ ENGINE.on("connection", (ue, req) => {
 
 	ue.on("error", (error) => {
 		// A control frame must have a payload length of 125 bytes or less
-		// ue.close(1011, error.message.slice(0, 100));
 	});
 
 
@@ -117,8 +118,10 @@ PLAYER.on("connection", (fe, req) => {
 	fe.req = req;
 
 	if (process.env.one2one) {
+		// 选择空闲的ue
 		fe.ue = [...ENGINE.clients].find(ue => ue.fe.size === 0)
 	} else {
+		// 选择人最少的ue
 		fe.ue = [...ENGINE.clients].sort((a, b) => a.fe.size - b.fe.size)[0]
 	}
 
