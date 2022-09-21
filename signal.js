@@ -33,16 +33,7 @@ ENGINE.on("connection", (ue, req) => {
 	// 认领空闲的前端们
 	for (const fe of PLAYER.clients) {
 		if (!fe.ue) {
-			fe.ue = ue;
-			ue.fe.add(fe)
-			ue.send(
-				JSON.stringify({
-					type: "playerConnected",
-					playerId: fe.req.socket.remotePort,
-					dataChannel: true,
-					sfu: false,
-				})
-			);
+			PLAYER.emit('connection', fe, fe.req)
 		}
 	}
 	print();
@@ -62,25 +53,23 @@ ENGINE.on("connection", (ue, req) => {
 		const fe = [...ue.fe].find((fe) =>
 			fe.req.socket.remotePort === +msg.playerId
 		);
-		if (!fe) {
-			return;
-		}
+
+		if (!fe) return;
 
 		delete msg.playerId; // no need to send it to the player
 		if (["offer", "answer", "iceCandidate"].includes(msg.type)) {
 			fe.send(JSON.stringify(msg));
 		} else if (msg.type === "disconnectPlayer") {
 			fe.close(1011, msg.reason);
-		} else {
-			// console.error("? invalid Engine message type:", msg.type);
-		}
+		} else { }
 	});
 
 	ue.on("close", (code, reason) => {
 		ue.fe.forEach(fe => {
+			// ue断掉后，让玩家们去寻找下家
 			PLAYER.emit('connection', fe, fe.req)
 		})
-		// print();
+		print();
 	});
 
 	ue.on("error", (error) => {
@@ -90,6 +79,7 @@ ENGINE.on("connection", (ue, req) => {
 
 });
 
+// 自启动命令池
 const UE5_pool = Object.entries(process.env)
 	.filter(([key]) => key.startsWith('UE5_'))
 	.map(([, value]) => value)
@@ -172,22 +162,17 @@ PLAYER.on("connection", (fe, req) => {
 			(err, stdout, stderr) => { }
 		);
 		UE5_pool.push(UE5_pool.shift())
-
 	}
-
-
 
 	print();
 
-
-
-	fe.on("message", (msg) => {
+	fe.onmessage = (msg) => {
 		if (!fe.ue) {
 			fe.send(`! Engine not ready`);
 			return;
 		}
 
-		msg = JSON.parse(msg);
+		msg = JSON.parse(msg.data);
 
 		msg.playerId = req.socket.remotePort;
 		if (["answer", "iceCandidate"].includes(msg.type)) {
@@ -195,9 +180,9 @@ PLAYER.on("connection", (fe, req) => {
 		} else {
 			fe.send("? " + msg.type);
 		}
-	});
+	};
 
-	fe.on("close", (code, reason) => {
+	fe.onclose = (e) => {
 		if (fe.ue) {
 			fe.ue.send(JSON.stringify({
 				type: "playerDisconnected",
@@ -206,13 +191,10 @@ PLAYER.on("connection", (fe, req) => {
 			fe.ue.fe.delete(fe)
 		}
 
-
 		print();
-	});
+	};
 
-	fe.on("error", (error) => {
-		// console.error("! player", playerId, "connection error:", error);
-	});
+	fe.onerror = (error) => { };
 
 
 

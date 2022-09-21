@@ -25,15 +25,15 @@ start http://localhost:88/test.html
 
 ## Env Variables for signal.js
 
-| env      | type      | default   | usage                                                     |
-| -------- | --------- | --------- | --------------------------------------------------------- |
-| player   | number    | 88        | WS port number for player                                 |
-| engine   | number    | 8888      | WS port number for UE5                                    |
-| UE5_*    | string[ ] |           | run command when player connected (e.g. starting UE5.exe) |
-| one2one  | bool      | false     | one-to-one mapping for player & UE5                       |
-| token    | string    |           | authenticate the player                                   |
-| limit    | number    | +Infinity | limit max number of players connected                     |
-| throttle | bool      | false     | WebSocket throttle, prevent frequent reconnection         |
+| env      | type     | default   | usage                                                     |
+| -------- | -------- | --------- | --------------------------------------------------------- |
+| player   | number   | 88        | WebSocket port for player                                 |
+| engine   | number   | 8888      | WebSocket port for UE5                                    |
+| UE5_*    | string[] |           | run command when player connected (e.g. starting UE5.exe) |
+| one2one  | bool     | false     | one-to-one mapping for player & UE5                       |
+| token    | string   |           | WebSocket password                                        |
+| limit    | number   | +Infinity | limit max number of players connected                     |
+| throttle | bool     | false     | WebSocket throttle, prevent frequent reconnection         |
 
 ### Load Balance
 
