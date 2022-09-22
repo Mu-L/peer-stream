@@ -104,7 +104,6 @@ HTTP.on('upgrade', (req, socket, head) => {
 	// password
 	if (process.env.token) {
 		if (req.url !== process.env.token) {
-			socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
 			socket.destroy();
 			return;
 		}
@@ -114,7 +113,6 @@ HTTP.on('upgrade', (req, socket, head) => {
 	// players max count
 	if (process.env.limit) {
 		if (PLAYER.clients.size > +process.env.limit) {
-			socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
 			socket.destroy();
 			return;
 		}
@@ -123,7 +121,6 @@ HTTP.on('upgrade', (req, socket, head) => {
 	// throttle
 	if (process.env.throttle) {
 		if (global.throttle) {
-			socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
 			socket.destroy();
 			return;
 		} else {
