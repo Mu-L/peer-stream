@@ -27,10 +27,10 @@ start http://localhost:88/test.html
 
 | env      | type     | default   | usage                                              |
 | -------- | -------- | --------- | -------------------------------------------------- |
-| PORT     | number   | 88        | WebSocket port for player & UE5                    |
-| UE5_*    | string[] |           | run command when player connected (UE5 auto start) |
+| PORT     | number   | 88        | WebSocket/HTTP port for player & UE5               |
+| UE5_*    | string[] | []        | run command when player connected (UE5 auto start) |
 | one2one  | bool     | false     | one-to-one mapping for player & UE5                |
-| token    | string   |           | WebSocket password                                 |
+| token    | string   | ''        | WebSocket password                                 |
 | limit    | number   | +Infinity | limit max number of players connected              |
 | throttle | bool     | false     | WebSocket throttle, prevent frequent reconnection  |
 
@@ -45,7 +45,7 @@ enable the plugin:
 ```s
 Plugins > Built-In > Graphics > Pixel Streaming > Enabled
 Editor Preferences > Level Editor > Play > Additional Launch Parameters
-start myPackagedGame.exe -{key}={value}
+start path/to/UE5.exe -{key}={value}
 ```
 
 common startup options:
