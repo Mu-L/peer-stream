@@ -131,6 +131,7 @@ HTTP.on('upgrade', (req, socket, head) => {
 		}
 	}
 
+	// WS子协议
 	if (req.headers['sec-websocket-protocol'] === 'peer-stream') {
 		PLAYER.handleUpgrade(req, socket, head, fe => {
 			PLAYER.emit('connection', fe, req,)
