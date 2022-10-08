@@ -82,8 +82,8 @@ const SEND = {
 };
 
 class PeerStream extends HTMLVideoElement {
-	constructor(...params) {
-		super(...params);
+	constructor() {
+		super();
 
 		window.ps = this;
 
@@ -119,7 +119,6 @@ class PeerStream extends HTMLVideoElement {
 		// This will happen each time the node is moved, and may happen before the element"s contents have been fully parsed. may be called once your element is no longer connected
 		if (!this.isConnected) return;
 		if (this.pc.connectionState === "connected" && this.dc.readyState === "open") {
-			clearTimeout(this.disconnectTimer);
 			// this.pc.restartIce();
 			this.play();
 			return;
@@ -129,9 +128,7 @@ class PeerStream extends HTMLVideoElement {
 		this.ws.close(1000);
 		this.ws = new WebSocket(this.id || location.href.replace(/^http/, "ws"), 'peer-stream');
 
-		this.ws.onerror = (e) => {
-			console.log(e);
-		};
+		this.ws.onerror
 
 		this.ws.onopen = async (e) => {
 			console.info("✅ connected to", this.ws.url);
@@ -158,12 +155,13 @@ class PeerStream extends HTMLVideoElement {
 
 	disconnectedCallback() {
 		// lifecycle binding
-		this.disconnectTimer = setTimeout(() => {
+		setTimeout(() => {
+			if (this.isConnected) return
 			this.ws.close(1000);
 			this.pc.close();
 			console.log("❌ peer connection closing");
 			// this.dc.close();
-		}, 1000);
+		}, 5 * 1000);
 	}
 
 	adoptedCallback() { }
@@ -301,9 +299,7 @@ class PeerStream extends HTMLVideoElement {
 
 			setTimeout(() => {
 				this.dc.send(new Uint8Array([SEND.RequestInitialSettings]));
-				if (!this.QualityControlOwnership) {
-					this.dc.send(new Uint8Array([SEND.RequestQualityControl]));
-				}
+				this.dc.send(new Uint8Array([SEND.RequestQualityControl]));
 			}, 500);
 		};
 
