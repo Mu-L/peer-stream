@@ -56,7 +56,7 @@ common startup options:
  -Unattended
  -GraphicsAdapter=0
  -ForceRes
- -windowed
+ -Windowed
  -ResX=1280
  -ResY=720
  -AudioMixer

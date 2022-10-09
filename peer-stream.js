@@ -81,6 +81,18 @@ const SEND = {
 	GamepadAnalog: 92,
 };
 
+const iceServers = [
+	{
+		urls: [
+			"stun:stun.l.google.com:19302",
+			"stun:stun1.l.google.com:19302",
+			"stun:stun2.l.google.com:19302",
+			"stun:stun3.l.google.com:19302",
+			"stun:stun4.l.google.com:19302",
+		],
+	},
+]
+
 class PeerStream extends HTMLVideoElement {
 	constructor() {
 		super();
@@ -130,8 +142,8 @@ class PeerStream extends HTMLVideoElement {
 
 		this.ws.onerror
 
-		this.ws.onopen = async (e) => {
-			console.info("✅ connected to", this.ws.url);
+		this.ws.onopen = () => {
+			console.info("✅", this.ws);
 		};
 
 		this.ws.onmessage = (e) => {
@@ -145,7 +157,7 @@ class PeerStream extends HTMLVideoElement {
 				console.log("redirect =>", e.reason);
 				timeout = 500;
 			} else {
-				console.info("❌ WebSocket closed", e.code);
+				console.info("❌ WebSocket closed", e.code, e.reason);
 			}
 
 			clearTimeout(this.reconnect);
@@ -294,7 +306,7 @@ class PeerStream extends HTMLVideoElement {
 		this.dc.binaryType = "arraybuffer";
 
 		this.dc.onopen = (e) => {
-			console.log("✅ data channel open");
+			console.log("✅", this.dc);
 			this.style.pointerEvents = "auto";
 
 			setTimeout(() => {
@@ -321,17 +333,7 @@ class PeerStream extends HTMLVideoElement {
 		this.pc = new RTCPeerConnection({
 			sdpSemantics: "unified-plan",
 			bundlePolicy: "balanced",
-			// iceServers: [
-			//   {
-			//     urls: [
-			//       "stun:stun.l.google.com:19302",
-			//       "stun:stun1.l.google.com:19302",
-			//       "stun:stun2.l.google.com:19302",
-			//       "stun:stun3.l.google.com:19302",
-			//       "stun:stun4.l.google.com:19302",
-			//     ],
-			//   },
-			// ],
+			// iceServers
 		});
 
 		this.pc.ontrack = (e) => {
