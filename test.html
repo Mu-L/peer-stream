@@ -23,22 +23,13 @@
 			/* text contrast */
 			text-shadow: black 0 0 0.3em;
 		}
-
-		::cue {
-			color: yellow;
-			background-color: transparent;
-			text-shadow: black 0 0 0.5em;
-			font-size: medium;
-		}
 	</style>
 </head>
 
 <body>
 	<script type="text/javascript" src="./peer-stream.js"></script>
 
-	<video is="peer-stream" audio >
-		<track default kind="captions" srclang="en" />
-	</video>
+	<video is="peer-stream" audio> </video>
 
 	<!-- WebRTC monitor -->
 	<pre id="stats">Not connected</pre>
@@ -46,15 +37,6 @@
 		ps.addEventListener("playing", aggregateStats, { once: true });
 		ps.addEventListener("message", (e) => { });
 		ps.addEventListener("suspend", (e) => { });
-
-		// use WebVTT to show logs
-		console.info = (...text) => {
-			console.log(...text);
-			const cue = new VTTCue(ps.currentTime, ps.currentTime + 3, text.join(" "));
-			cue.align = "left";
-			cue.line = 0;
-			ps.textTracks[0].addCue(cue);
-		};
 
 		async function aggregateStats() {
 			const statsReport = await ps.pc.getStats(null);
