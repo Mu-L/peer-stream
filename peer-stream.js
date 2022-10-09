@@ -157,7 +157,7 @@ class PeerStream extends HTMLVideoElement {
 				console.log("redirect =>", e.reason);
 				timeout = 500;
 			} else {
-				console.info("❌ WebSocket closed", e.code, e.reason);
+				console.warn(e);
 			}
 
 			clearTimeout(this.reconnect);
