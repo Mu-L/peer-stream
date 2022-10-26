@@ -112,7 +112,7 @@ HTTP.on('upgrade', (req, socket, head) => {
 
 	// players max count
 	if (process.env.limit) {
-		if (PLAYER.clients.size > +process.env.limit) {
+		if (PLAYER.clients.size >= +process.env.limit) {
 			socket.destroy();
 			return;
 		}
