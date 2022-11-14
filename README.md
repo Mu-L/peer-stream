@@ -97,7 +97,7 @@ receiving messages:
 
 ```js
 ps.addEventListener("message", e => {
-    e.detail;   // string
+    // JSON.parse(e.detail)
 });
 ```
 
