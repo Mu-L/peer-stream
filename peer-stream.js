@@ -552,6 +552,8 @@ class PeerStream extends HTMLVideoElement {
 
 		this.onmouseleave = (e) => {
 			if (this.dc.readyState === "open") this.dc.send(new Uint8Array([SEND.MouseLeave]));
+			this.emitMouseUp(MouseButton.MainButton, 0, 0)
+			this.emitMouseUp(MouseButton.SecondaryButton, 0, 0)
 		};
 	}
 
