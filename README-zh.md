@@ -82,7 +82,7 @@ flowchart TD;
        
         map121[一一映射 ?];
         start(((启动 UE5)));
-        idle[空闲 UE5 进程 ?];
+        idle[寻找空闲进程];
         min[寻找最小负载];
     
         idle --无--> start;
