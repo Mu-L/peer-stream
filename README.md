@@ -104,7 +104,7 @@ ps.addEventListener("message", e => {
 ## Requirement
 
 - Google Chrome 90+
-- Unreal Engine 5.0.0+
+- Unreal Engine 5.0.3
 - NodeJS 14+
 - npm/ws 8.0+
 
