@@ -63,25 +63,25 @@ signal.js在官方库的基础上做了大量优化
 
 ```mermaid
 flowchart LR;
-    121{一一映射?};
-    match(匹配);
-    finish(结束);
-    UE5{存在UE5进程?};
-    join(前端连入);
+    121[一一映射?];
+    match([匹配]);
+    finish([结束]);
+    UE5[存在UE5进程?];
+    join([前端连入]);
     start[启动UE5];
-    idle{空闲UE5进程?};
+    idle[空闲UE5进程?];
     min[寻找最小负载];
  
     join --> UE5;
     UE5 -->|否| start;
     start -->|启动失败| finish;
-    start -->|一段时间后| match;
+    start -. 一段时间后 .-> match;
     UE5 -->|是| 121;
     121 -->|开| idle; 
     idle -->|无| start;
     idle -->|有| match;
-    121 -->|关| min; 
-    min --> match;
+    121 -->|关| min --> match;
+
 ```
 
 ## Unreal Engine
