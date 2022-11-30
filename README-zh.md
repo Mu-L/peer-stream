@@ -64,7 +64,7 @@ signal.js在官方库的基础上做了大量优化
 
 ```mermaid
 flowchart TD;
-    121[一一映射?];
+    map121[一一映射?];
     match([匹配]);
     finish([结束]);
     UE5[存在UE5进程?];
@@ -72,16 +72,17 @@ flowchart TD;
     start[启动UE5];
     idle[空闲UE5进程?];
     min[寻找最小负载];
+    note[[UE5连入后也会 \n 自动匹配空闲的前端]]
  
     join --> UE5;
     UE5 -->|否| start;
     start -->|启动失败| finish;
     start -. 一段时间后 .-> match;
-    UE5 -->|是| 121;
-    121 -->|开| idle; 
+    UE5 -->|是| map121;
+    map121 -->|开| idle; 
     idle -->|无| start;
     idle -->|有| match;
-    121 -->|关| min --> match;
+    map121 -->|关| min --> match;
 
 ```
 
