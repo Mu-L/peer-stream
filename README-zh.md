@@ -72,17 +72,18 @@ flowchart TD;
     start[启动UE5];
     idle[空闲UE5进程?];
     min[寻找最小负载];
-    note[[UE5连入后也会 \n 自动匹配空闲的前端]]
+    
+    a([UE5连入]) --> 寻找空闲前端 --> b([匹配]);
  
     join --> UE5;
-    UE5 -->|否| start;
-    start -->|启动失败| finish;
-    start -. 一段时间后 .-> match;
-    UE5 -->|是| map121;
-    map121 -->|开| idle; 
-    idle -->|无| start;
-    idle -->|有| match;
-    map121 -->|关| min --> match;
+    UE5 --否--> start;
+    start --启动失败--> finish;
+    start -.一段时间后.-> match;
+    UE5 --是--> map121;
+    map121 --开--> idle; 
+    idle --无--> start;
+    idle --有--> match;
+    map121 --关--> min --> match;
 
 ```
 
