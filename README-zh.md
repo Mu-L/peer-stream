@@ -29,6 +29,7 @@ start http://localhost:88/test.html
 
 signal.js在官方库的基础上做了大量优化
 
+- 文件只有5KB，压缩后只有3KB。
 - 提供http文件服务，和WebSocket共享端口号。
 - 面向前端和面向UE5的端口号绑定，通过WebSocket子协议区分。
 - 通过环境变量统一传参。
@@ -57,12 +58,12 @@ signal.js在官方库的基础上做了大量优化
 | limit    | 正整数     | +Infinity | 限制前端最大连接数             |
 | throttle | 布尔       | false     | WebSocket 节流, 避免频繁的重连 |
 
-### 负载均衡
+### 负载均衡与UE5自启动
 
-`signal.js` 既支持多个前端连接，也支持多个UE5连接，此时前端和UE5的多对多映射关系是均衡负载的：前端会被引向最空闲的UE5进程。若想要限制一一映射关系，开启`one2one` 环境变量。 Provide `UE5_*` to start UE5 automatically. More detailed example in `.signal.js`.
+`signal.js` 既支持多个前端连接，也支持多个UE5连接，此时前端和UE5的多对多映射关系是均衡负载的：前端会被引向最空闲的UE5进程。若想要限制一一映射关系，开启`one2one` 环境变量。最好提供 `UE5_*` 自启动命令行，更多实例参考 `.signal.js`。流程图如下：
 
 ```mermaid
-flowchart LR;
+flowchart TD;
     121[一一映射?];
     match([匹配]);
     finish([结束]);
@@ -84,9 +85,9 @@ flowchart LR;
 
 ```
 
-## Unreal Engine
+## 虚幻引擎
 
-enable the plugin:
+启动插件，并在编辑器中测试:
 
 ```s
 Plugins > Built-In > Graphics > Pixel Streaming > Enabled
@@ -94,7 +95,7 @@ Editor Preferences > Level Editor > Play > Additional Launch Parameters
 start path/to/UE5.exe -{key}={value}
 ```
 
-common startup options:
+常用的启动选项:
 
 ```s
  -PixelStreamingURL="ws://localhost:88"
@@ -111,6 +112,19 @@ common startup options:
 ```
 
 ## peer-stream.js 前端开发包
+
+- 文件18KB，压缩后12KB。
+- 基于 Web Components API 组件化video标签。
+- 断线自动重连。
+- DOM生命周期绑定：挂载自动连接，卸载自动断开。
+- 支持stun公网穿透。
+- 全局挂载一份引用方便调试：window.ps。
+- 支持5种键盘/鼠标/触屏输入模式。
+- 支持3333端口重定向。
+- 支持视频自动播放。
+- video标签的id即信令服务器地址，默认指向网页的域名。
+
+### 引入
 
 HTML:
 
@@ -130,28 +144,19 @@ document.body.append(ps);
 </script>
 ```
 
-### Messages
+### 字符串消息收发
 
-sending messages:
+发送消息:
 
 ```js
-// object will be JSON.stringify()
+// 若传入对象，会被JSON化
 ps.emitMessage(msg: string | object);
 ```
 
-receiving messages:
+接收消息:
 
 ```js
 ps.addEventListener("message", e => {
     // JSON.parse(e.detail)
 });
 ```
-
-## Requirement
-
-- Google Chrome 90+
-- Unreal Engine 5.0.3
-- NodeJS 14+
-- npm/ws 8.0+
-
- 
