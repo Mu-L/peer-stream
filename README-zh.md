@@ -81,7 +81,7 @@ flowchart TD;
         map121 --关--> min --> match;  
        
         map121[一一映射 ?];
-        start[启动 UE5];
+        start(((启动 UE5)));
         idle[空闲 UE5 进程 ?];
         min[寻找最小负载];
     
@@ -93,7 +93,7 @@ flowchart TD;
         寻找空闲前端 --成功--> match;
         寻找空闲前端 --失败--> finish;
 
-        manual  ----> start;
+        manual  --> start;
     end
 ```
 
