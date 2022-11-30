@@ -1,7 +1,7 @@
 # 虚幻引擎UE5 像素流 依赖
 
 和官方臃肿不堪的像素流SDK相比，我们开发出了轻量、零依赖、开箱即用的软件套装，前端的peer-stream.js基于WebComponentsAPI，后端signal.js基于NodeJS和npm/ws。
- 
+
  | 文件名         | 大小 | 作用                         |
  | -------------- | ---- | ---------------------------- |
  | peer-stream.js | 18KB | 浏览器SDK，一键开启。        |
@@ -44,8 +44,7 @@ signal.js在官方库的基础上做了大量优化
 - 支持stun公网穿透，在公网间互连。
 - 控制台可输入调试代码，并打印计算结果。
 - 定时发送心跳连接保活。
-- 前端端口号作为前端ID。
-
+- 前端的端口号与ID绑定。
 
 ### .signal.js 环境变量
 
@@ -64,21 +63,22 @@ signal.js在官方库的基础上做了大量优化
 
 ```mermaid
 flowchart TD;
+    subgraph  
+        player([前端连入]);
+        manual([手动启动])
+    end
+
     subgraph   
         finish([结束]);
         match([匹配]);
     end
 
     subgraph  
-        UE5([前端连入]);
-        manual([手动启动])
-    end
-
-    subgraph  
-        start --UE5 连入--> 寻找空闲前端;
+        claim[寻找空闲前端];
+        start --UE5 连入--> claim;
         idle --有--> match;
         start --启动失败--> finish;
-        map121 --关--> min --> match;  
+        map121 --关--> min ---> match;  
        
         map121[一一映射 ?];
         start(((启动 UE5)));
@@ -86,14 +86,14 @@ flowchart TD;
         min[寻找最小负载];
     
         idle --无--> start;
-        UE5 -- 有 UE5 进程 --> map121;
+        player -- 有 UE5 进程 --> map121;
         map121 --开--> idle; 
-        UE5 -- 无 UE5 进程 --> start;
+        player -- 无 UE5 进程 --> start;
        
-        寻找空闲前端 --成功--> match;
-        寻找空闲前端 --失败--> finish;
+        claim --成功--> match;
+        claim --404--> finish;
 
-        manual  --> start;
+        manual  --命令行--> start;
     end
 ```
 
